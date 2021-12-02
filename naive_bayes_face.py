@@ -3,9 +3,9 @@ import numpy as np
 
 # Feature Idea: Use 4489 (67*67) features for naive bayes face algorithm
 
-DIGIT_TRAIN_IMAGE_PATH = "data/facedata/trainingimages"
-DIGIT_TRAIN_LABEL_PATH = "data/facedata/traininglabels"
-DIMENSIONS = 67
+FACE_TRAIN_IMAGE_PATH = "data/facedata/facedatatrain"
+FACE_TRAIN_LABEL_PATH = "data/facedata/facedatatrainlabels"
+DIMENSIONS = 70
 FEATURES = DIMENSIONS * DIMENSIONS # Size of each image 67*67
 
 POSSIBLE_LABELS = 2 #Number of possible predictions, 2 in this case since its either a face or not a face
@@ -44,4 +44,21 @@ def create_label_list(file):
     return np.loadtxt(file, dtype=int)
 
 
-#def train_perceptron(feature_list, label_list):
+def train_bayes(feature_list, label_list):
+
+    #Calculate P(y=face) as prob_face and P(y=-face) as prob_not_face
+    num_faces = 0
+    for l in label_list:
+        if (l == 1):
+            num_faces += 1
+
+    prob_face = num_faces / len(label_list)
+    prob_not_face = 1 - prob_face
+
+    print(num_faces)
+    print(len(label_list) - num_faces)
+    print(prob_face)
+    print(prob_not_face)
+    print (len(feature_list))
+
+train_bayes(create_feature_list(FACE_TRAIN_IMAGE_PATH), create_label_list(FACE_TRAIN_LABEL_PATH))

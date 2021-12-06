@@ -46,37 +46,6 @@ def create_feature_list(file):
 def create_label_list(file):
     return np.loadtxt(file, dtype=int)
 
-def create_test_list(file):
-
-    with open(file, "r") as file:
-        line_num = 0
-        list = [] #Temporary master list
-        feature = [] #Feature list for the current image
-        for line in file:
-            if (line_num == DIMENSIONS): #reset every Dimension lines for the next image
-                feature = []
-                
-                list.append(feature) 
-                #feature = []
-                line_num = 0
-
-            for c in line: #Covert white-space to 0s and +/# to 1s
-                if (c == ' '):
-                    feature.append(0)
-                elif (c == '+' or c == '#'):
-                    feature.append(1)
-            line_num += 1 
-
-    list.append(feature) #append final list
-
-    test_list = np.array(list) #Covert list to numpy array
-    return test_list
-
-#Creates a list of labels for each image
-#label_list[i] = label of feature_list[i]
-def create_test_label_list(file):
-    return np.loadtxt(file, dtype=int)
-
 
 def train_bayes(feature_list, label_list):
 
@@ -147,10 +116,10 @@ def train_bayes(feature_list, label_list):
         i += 1
 
     #Feature list for testing data
-    test_list = create_test_list(FACE_TEST_IMAGE_PATH)
+    test_list = create_feature_list(FACE_TEST_IMAGE_PATH)
 
     #Label list for testing data
-    test_label_list = create_test_label_list(FACE_TEST_LABEL_PATH)
+    test_label_list = create_label_list(FACE_TEST_LABEL_PATH)
 
     #list to hold predictions for P(x|y=face)
     face_predictions = [0]*len(test_label_list)

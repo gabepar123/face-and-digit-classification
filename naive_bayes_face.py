@@ -5,6 +5,8 @@ import numpy as np
 
 FACE_TRAIN_IMAGE_PATH = "data/facedata/facedatatrain"
 FACE_TRAIN_LABEL_PATH = "data/facedata/facedatatrainlabels"
+FACE_TEST_IMAGE_PATH = "data/facedata/facedatatest"
+FACE_TEST_LABEL_PATH = "data/facedata/facedatatestlabels"
 DIMENSIONS = 70
 FEATURES = DIMENSIONS * DIMENSIONS # Size of each image 67*67
 
@@ -42,6 +44,37 @@ def create_feature_list(file):
 #Creates a list of labels for each image
 #label_list[i] = label of feature_list[i]
 def create_label_list(file):
+    return np.loadtxt(file, dtype=int)
+
+def create_test_list(file):
+
+    with open(file, "r") as file:
+        line_num = 0
+        list = [] #Temporary master list
+        feature = [] #Feature list for the current image
+        for line in file:
+            if (line_num == DIMENSIONS): #reset every Dimension lines for the next image
+                feature = []
+                
+                list.append(feature) 
+                #feature = []
+                line_num = 0
+
+            for c in line: #Covert white-space to 0s and +/# to 1s
+                if (c == ' '):
+                    feature.append(0)
+                elif (c == '+' or c == '#'):
+                    feature.append(1)
+            line_num += 1 
+
+    list.append(feature) #append final list
+
+    test_list = np.array(list) #Covert list to numpy array
+    return test_list
+
+#Creates a list of labels for each image
+#label_list[i] = label of feature_list[i]
+def create_test_label_list(file):
     return np.loadtxt(file, dtype=int)
 
 
@@ -113,23 +146,94 @@ def train_bayes(feature_list, label_list):
         not_face_feature_table_pixels[i] /= (len(label_list) - num_faces)
         i += 1
 
-    #print(len(feature_list) == len(label_list))
-    #print(len(feature_list))
-    #print(not_face_feature_table)
-    #print(451-num_faces)
-    #print(len(feature_list[0]))
-    #print(not_face_feature_table_blanks)
-    #print(face_feature_table2)
+    #Feature list for testing data
+    test_list = create_test_list(FACE_TEST_IMAGE_PATH)
+
+    #Label list for testing data
+    test_label_list = create_test_label_list(FACE_TEST_LABEL_PATH)
+
+    #list to hold predictions for P(x|y=face)
+    face_predictions = [0]*len(test_label_list)
+    #list to hold predictions for P(x|y=not face)
+    not_face_predictions = [0]*len(test_label_list)
+
     i = 0
-    while i < len(not_face_feature_table_blanks):
-        print(not_face_feature_table_blanks[i] + not_face_feature_table_pixels[i])
+    while i < len(test_list):
+        j = 0
+        while j < len(test_list[0]):
+            if (test_list[i][j] == 0):
+                if (face_feature_table_blanks[j] != 0):
+                    face_predictions[i] += np.log(face_feature_table_blanks[j])
+                else: 
+                    face_predictions[i] += 0.001
+            else:
+                if (face_feature_table_pixels[j] != 0):
+                    face_predictions[i] += np.log(face_feature_table_pixels[j])
+                else:
+                    face_predictions[i] += 0.001
+            j += 1
         i += 1
-    # i = 1
-    # while i < len(feature_list):
-    #     print(np.array_equiv(feature_list[i], feature_list[i-1]))
+
+    i = 0
+    while i < len(test_list):
+        j = 0
+        while j < len(test_list[0]):
+            if (test_list[i][j] == 0):
+                if (not_face_feature_table_blanks[j] != 0):
+                    not_face_predictions[i] += np.log(not_face_feature_table_blanks[j])
+                else: 
+                    not_face_predictions[i] += 0.001
+            else:
+                if (not_face_feature_table_pixels[j] != 0):
+                    not_face_predictions[i] += np.log(not_face_feature_table_pixels[j])
+                else:
+                    not_face_predictions[i] += 0.001
+            j += 1
+        i += 1
+    # print(face_predictions)
+    # counter = 0
+    # i = 0
+    # while i < len(face_predictions):
+    #     if (not_face_predictions[i] != 0):
+    #         counter += 1
     #     i += 1
-    #print(not_face_feature_table)
-    #print(feature_list)
+    # print(counter)
+
+    i = 0
+    while i < len(face_predictions):
+        face_predictions[i] += np.log(prob_face)
+        i += 1
+    #print(face_predictions)
+
+    i = 0
+    while i < len(not_face_predictions):
+        not_face_predictions[i] += np.log(prob_not_face)
+        i += 1
+    #print(not_face_predictions)
+
+    final_predictions = [0]*len(test_label_list)
+    i = 0
+    while i < len(test_label_list):
+        if (face_predictions[i] > not_face_predictions[i]):
+            final_predictions[i] = 1
+        else:
+            final_predictions[i] = 0
+        i += 1
+
+    print(final_predictions)
+
+    print(np.mean(final_predictions))
+    print(np.mean(test_label_list))
+
+    num_correct = 0
+    i = 0
+    while i < len(final_predictions):
+        if (final_predictions[i] == test_label_list[i]):
+            num_correct += 1
+        i += 1
+
+    print(num_correct/len(final_predictions))
+
 
 
 

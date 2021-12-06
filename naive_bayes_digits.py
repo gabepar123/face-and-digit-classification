@@ -1,5 +1,6 @@
 from os import linesep
 import numpy as np
+import math
 
 # Feature Idea: Use 4489 (67*67) features for naive bayes face algorithm
 
@@ -54,9 +55,21 @@ def train_bayes(feature_list, label_list):
     for l in label_list:
         num_digits[l] += 1
 
-    prob_digits = num_digits
-    for digit in prob_digits:
-        digit /= len(label_list)
+    print(num_digits)
+    #print(len(label_list))
+
+    prob_digits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    i = 0
+    while i < len(prob_digits):
+        prob_digits[i] = num_digits[i]
+        i += 1
+    i = 0
+    while i < len(prob_digits):
+        prob_digits[i] /= len(label_list)
+        i += 1
+
+    i = 0
+    #print(prob_digits)
 
     zero_feature_table_blanks = [0]*len(feature_list[0])
     zero_feature_table_pixels = [0]*len(feature_list[0])
@@ -213,17 +226,21 @@ def train_bayes(feature_list, label_list):
                     nine_feature_table_pixels[j] += 1
                 j = j + 1
         i = i + 1
-        
 
     i = 0
     while i < len(zero_feature_table_blanks):
-        zero_feature_table_blanks[i] /= num_digits[0]
+        zero_feature_table_blanks[i] = zero_feature_table_blanks[i] / num_digits[0]
         i += 1
 
     i = 0
     while i < len(zero_feature_table_pixels):
-        zero_feature_table_pixels[i] /= num_digits[0]
+        zero_feature_table_pixels[i] = zero_feature_table_pixels[i] / num_digits[0]
         i += 1
+
+    # i=0
+    # while i < len(zero_feature_table_blanks):
+    #     print(zero_feature_table_blanks[i] + zero_feature_table_pixels[i])
+    #     i += 1
 
     i = 0
     while i < len(one_feature_table_blanks):
@@ -348,14 +365,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (zero_feature_table_blanks[j] != 0):
-                    zero_predictions[i] += np.log(zero_feature_table_blanks[j])
+                    zero_predictions[i] += math.log(zero_feature_table_blanks[j])
                 else: 
-                    zero_predictions[i] += 0.001
+                    zero_predictions[i] += 0.01
             else:
                 if (zero_feature_table_pixels[j] != 0):
-                    zero_predictions[i] += np.log(zero_feature_table_pixels[j])
+                    zero_predictions[i] += math.log(zero_feature_table_pixels[j])
                 else:
-                    zero_predictions[i] += 0.001
+                    zero_predictions[i] += 0.01
             j += 1
         i += 1
 
@@ -365,14 +382,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (one_feature_table_blanks[j] != 0):
-                    one_predictions[i] += np.log(one_feature_table_blanks[j])
+                    one_predictions[i] += math.log(one_feature_table_blanks[j])
                 else: 
-                    one_predictions[i] += 0.001
+                    one_predictions[i] += 0.01
             else:
                 if (one_feature_table_pixels[j] != 0):
-                    one_predictions[i] += np.log(one_feature_table_pixels[j])
+                    one_predictions[i] += math.log(one_feature_table_pixels[j])
                 else:
-                    one_predictions[i] += 0.001
+                    one_predictions[i] += 0.01
             j += 1
         i += 1
 
@@ -382,14 +399,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (two_feature_table_blanks[j] != 0):
-                    two_predictions[i] += np.log(two_feature_table_blanks[j])
+                    two_predictions[i] += math.log(two_feature_table_blanks[j])
                 else: 
-                    two_predictions[i] += 0.001
+                    two_predictions[i] += 0.01
             else:
                 if (two_feature_table_pixels[j] != 0):
-                    two_predictions[i] += np.log(two_feature_table_pixels[j])
+                    two_predictions[i] += math.log(two_feature_table_pixels[j])
                 else:
-                    two_predictions[i] += 0.001
+                    two_predictions[i] += 0.01
             j += 1
         i += 1
 
@@ -399,14 +416,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (three_feature_table_blanks[j] != 0):
-                    three_predictions[i] += np.log(three_feature_table_blanks[j])
+                    three_predictions[i] += math.log(three_feature_table_blanks[j])
                 else: 
-                    three_predictions[i] += 0.001
+                    three_predictions[i] += 0.01
             else:
                 if (three_feature_table_pixels[j] != 0):
-                    three_predictions[i] += np.log(three_feature_table_pixels[j])
+                    three_predictions[i] += math.log(three_feature_table_pixels[j])
                 else:
-                    three_predictions[i] += 0.001
+                    three_predictions[i] += 0.01
             j += 1
         i += 1  
 
@@ -416,14 +433,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (four_feature_table_blanks[j] != 0):
-                    four_predictions[i] += np.log(four_feature_table_blanks[j])
+                    four_predictions[i] += math.log(four_feature_table_blanks[j])
                 else: 
-                    four_predictions[i] += 0.001
+                    four_predictions[i] += 0.01
             else:
                 if (four_feature_table_pixels[j] != 0):
-                    four_predictions[i] += np.log(four_feature_table_pixels[j])
+                    four_predictions[i] += math.log(four_feature_table_pixels[j])
                 else:
-                    four_predictions[i] += 0.001
+                    four_predictions[i] += 0.01
             j += 1
         i += 1 
 
@@ -433,14 +450,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (five_feature_table_blanks[j] != 0):
-                    five_predictions[i] += np.log(five_feature_table_blanks[j])
+                    five_predictions[i] += math.log(five_feature_table_blanks[j])
                 else: 
-                    five_predictions[i] += 0.001
+                    five_predictions[i] += 0.01
             else:
                 if (five_feature_table_pixels[j] != 0):
-                    five_predictions[i] += np.log(five_feature_table_pixels[j])
+                    five_predictions[i] += math.log(five_feature_table_pixels[j])
                 else:
-                    five_predictions[i] += 0.001
+                    five_predictions[i] += 0.01
             j += 1
         i += 1 
 
@@ -450,14 +467,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (six_feature_table_blanks[j] != 0):
-                    six_predictions[i] += np.log(six_feature_table_blanks[j])
+                    six_predictions[i] += math.log(six_feature_table_blanks[j])
                 else: 
-                    six_predictions[i] += 0.001
+                    six_predictions[i] += 0.01
             else:
                 if (six_feature_table_pixels[j] != 0):
-                    six_predictions[i] += np.log(six_feature_table_pixels[j])
+                    six_predictions[i] += math.log(six_feature_table_pixels[j])
                 else:
-                    six_predictions[i] += 0.001
+                    six_predictions[i] += 0.01
             j += 1
         i += 1 
     
@@ -467,14 +484,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (seven_feature_table_blanks[j] != 0):
-                    seven_predictions[i] += np.log(seven_feature_table_blanks[j])
+                    seven_predictions[i] += math.log(seven_feature_table_blanks[j])
                 else: 
-                    seven_predictions[i] += 0.001
+                    seven_predictions[i] += 0.01
             else:
                 if (seven_feature_table_pixels[j] != 0):
-                    seven_predictions[i] += np.log(seven_feature_table_pixels[j])
+                    seven_predictions[i] += math.log(seven_feature_table_pixels[j])
                 else:
-                    seven_predictions[i] += 0.001
+                    seven_predictions[i] += 0.01
             j += 1
         i += 1 
 
@@ -484,14 +501,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (eight_feature_table_blanks[j] != 0):
-                    eight_predictions[i] += np.log(eight_feature_table_blanks[j])
+                    eight_predictions[i] += math.log(eight_feature_table_blanks[j])
                 else: 
-                    eight_predictions[i] += 0.001
+                    eight_predictions[i] += 0.01
             else:
                 if (eight_feature_table_pixels[j] != 0):
-                    eight_predictions[i] += np.log(eight_feature_table_pixels[j])
+                    eight_predictions[i] += math.log(eight_feature_table_pixels[j])
                 else:
-                    eight_predictions[i] += 0.001
+                    eight_predictions[i] += 0.01
             j += 1
         i += 1 
 
@@ -501,14 +518,14 @@ def train_bayes(feature_list, label_list):
         while j < len(test_list[0]):
             if (test_list[i][j] == 0):
                 if (nine_feature_table_blanks[j] != 0):
-                    nine_predictions[i] += np.log(nine_feature_table_blanks[j])
+                    nine_predictions[i] += math.log(nine_feature_table_blanks[j])
                 else: 
-                    nine_predictions[i] += 0.001
+                    nine_predictions[i] += 0.01
             else:
                 if (nine_feature_table_pixels[j] != 0):
-                    nine_predictions[i] += np.log(nine_feature_table_pixels[j])
+                    nine_predictions[i] += math.log(nine_feature_table_pixels[j])
                 else:
-                    nine_predictions[i] += 0.001
+                    nine_predictions[i] += 0.01
             j += 1
         i += 1 
     # print(face_predictions)
@@ -522,61 +539,59 @@ def train_bayes(feature_list, label_list):
 
     i = 0
     while i < len(zero_predictions):
-        zero_predictions[i] += np.log(prob_digits[0])
+        zero_predictions[i] += math.log(prob_digits[0])
         i += 1
-    #print(face_predictions)
 
     i = 0
     while i < len(one_predictions):
-        one_predictions[i] += np.log(prob_digits[1])
+        one_predictions[i] += math.log(prob_digits[1])
         i += 1
-    #print(not_face_predictions)
 
     i = 0
     while i < len(two_predictions):
-        two_predictions[i] += np.log(prob_digits[2])
+        two_predictions[i] += math.log(prob_digits[2])
         i += 1
     
     i = 0
     while i < len(three_predictions):
-        three_predictions[i] += np.log(prob_digits[3])
+        three_predictions[i] += math.log(prob_digits[3])
         i += 1
 
     i = 0
     while i < len(four_predictions):
-        four_predictions[i] += np.log(prob_digits[4])
+        four_predictions[i] += math.log(prob_digits[4])
         i += 1
 
     i = 0
     while i < len(five_predictions):
-        five_predictions[i] += np.log(prob_digits[5])
+        five_predictions[i] += math.log(prob_digits[5])
         i += 1
 
     i = 0
     while i < len(six_predictions):
-        six_predictions[i] += np.log(prob_digits[6])
+        six_predictions[i] += math.log(prob_digits[6])
         i += 1 
 
     i = 0
     while i < len(seven_predictions):
-        seven_predictions[i] += np.log(prob_digits[7])
+        seven_predictions[i] += math.log(prob_digits[7])
         i += 1
 
     i = 0
     while i < len(eight_predictions):
-        eight_predictions[i] += np.log(prob_digits[8])
+        eight_predictions[i] += math.log(prob_digits[8])
         i += 1
 
     i = 0
     while i < len(nine_predictions):
-        nine_predictions[i] += np.log(prob_digits[9])
+        nine_predictions[i] += math.log(prob_digits[9])
         i += 1
 
 
     final_predictions = [0]*len(test_label_list)
     i = 0
     while i < len(test_label_list):
-        max(zero_predictions[i], one_predictions[i], two_predictions[i], three_predictions[i], four_predictions[i], five_predictions[i], six_predictions[i], seven_predictions[i], eight_predictions[i], nine_predictions[i])
+        final_predictions[i] = max(zero_predictions[i], one_predictions[i], two_predictions[i], three_predictions[i], four_predictions[i], five_predictions[i], six_predictions[i], seven_predictions[i], eight_predictions[i], nine_predictions[i])
         if (final_predictions[i] == zero_predictions[i]):
             final_predictions[i] = 0
         elif (final_predictions[i] == one_predictions[i]):
@@ -599,10 +614,10 @@ def train_bayes(feature_list, label_list):
             final_predictions[i] = 9
         i += 1
 
-    #print(final_predictions)
+    print(final_predictions)
 
-    #print(np.mean(final_predictions))
-    #print(np.mean(test_label_list))
+    print(np.mean(final_predictions))
+    print(np.mean(test_label_list))
 
     num_correct = 0
     i = 0
@@ -611,7 +626,7 @@ def train_bayes(feature_list, label_list):
             num_correct += 1
         i += 1
 
-    #print(num_correct/len(final_predictions))
+    print(num_correct/len(final_predictions))
 
 
 

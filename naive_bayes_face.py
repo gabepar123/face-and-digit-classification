@@ -7,8 +7,9 @@ FACE_TRAIN_IMAGE_PATH = "data/facedata/facedatatrain"
 FACE_TRAIN_LABEL_PATH = "data/facedata/facedatatrainlabels"
 FACE_TEST_IMAGE_PATH = "data/facedata/facedatatest"
 FACE_TEST_LABEL_PATH = "data/facedata/facedatatestlabels"
-DIMENSIONS = 70
-FEATURES = DIMENSIONS * DIMENSIONS # Size of each image 67*67
+HEIGHT = 70 #Dimension of each image
+WIDTH = 60 #Dimension of each image
+FEATURES = HEIGHT * WIDTH # Size of each image 28*28
 
 POSSIBLE_LABELS = 2 #Number of possible predictions, 2 in this case since its either a face or not a face
 
@@ -17,24 +18,19 @@ POSSIBLE_LABELS = 2 #Number of possible predictions, 2 in this case since its ei
 
 def create_feature_list(file):
 
+    list = [] #Temporary master list
     with open(file, "r") as file:
-        line_num = 0
-        list = [] #Temporary master list
         feature = [] #Feature list for the current image
         for line in file:
-            if (line_num == DIMENSIONS): #reset every Dimension lines for the next image
-                feature = []
-                
+            if (len(feature) == FEATURES): #reset every Dimension lines for the next image
                 list.append(feature) 
-                #feature = []
-                line_num = 0
+                feature = []
 
             for c in line: #Covert white-space to 0s and +/# to 1s
                 if (c == ' '):
                     feature.append(0)
                 elif (c == '+' or c == '#'):
                     feature.append(1)
-            line_num += 1 
 
     list.append(feature) #append final list
 
@@ -65,11 +61,8 @@ def train_bayes(feature_list, label_list):
     not_face_feature_table_pixels = [0]*len(feature_list[0])
 
     i = 0
-    #j = 0
-    print("yo")
     while i < len(feature_list):
         if(label_list[i] == 1):
-            #print("face")
             # do stuff with face_feature_table
             j = 0
             while j < len(face_feature_table_blanks):
@@ -81,17 +74,13 @@ def train_bayes(feature_list, label_list):
                     face_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 0):
-            #print("not a face")
             # do stuff with not_face_feature_table
             j = 0
             while j < len(not_face_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     not_face_feature_table_blanks[j] += 1
-                    #print("3")
                 else:
                     not_face_feature_table_pixels[j] += 1
-                #     #print("4")
                 j = j + 1
         i = i + 1
 
@@ -123,6 +112,7 @@ def train_bayes(feature_list, label_list):
 
     #list to hold predictions for P(x|y=face)
     face_predictions = [0]*len(test_label_list)
+
     #list to hold predictions for P(x|y=not face)
     not_face_predictions = [0]*len(test_label_list)
 
@@ -159,26 +149,16 @@ def train_bayes(feature_list, label_list):
                     not_face_predictions[i] += 0.001
             j += 1
         i += 1
-    # print(face_predictions)
-    # counter = 0
-    # i = 0
-    # while i < len(face_predictions):
-    #     if (not_face_predictions[i] != 0):
-    #         counter += 1
-    #     i += 1
-    # print(counter)
 
     i = 0
     while i < len(face_predictions):
         face_predictions[i] += np.log(prob_face)
         i += 1
-    #print(face_predictions)
 
     i = 0
     while i < len(not_face_predictions):
         not_face_predictions[i] += np.log(prob_not_face)
         i += 1
-    #print(not_face_predictions)
 
     final_predictions = [0]*len(test_label_list)
     i = 0
@@ -189,11 +169,6 @@ def train_bayes(feature_list, label_list):
             final_predictions[i] = 0
         i += 1
 
-    print(final_predictions)
-
-    print(np.mean(final_predictions))
-    print(np.mean(test_label_list))
-
     num_correct = 0
     i = 0
     while i < len(final_predictions):
@@ -201,7 +176,7 @@ def train_bayes(feature_list, label_list):
             num_correct += 1
         i += 1
 
-    print(num_correct/len(final_predictions))
+    print("Naive Bayes for faces accuracy: ", num_correct/len(final_predictions))
 
 
 

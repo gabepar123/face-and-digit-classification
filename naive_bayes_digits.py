@@ -18,24 +18,19 @@ POSSIBLE_LABELS = 2 #Number of possible predictions, 2 in this case since its ei
 
 def create_feature_list(file):
 
+    list = [] #Temporary master list
     with open(file, "r") as file:
-        line_num = 0
-        list = [] #Temporary master list
         feature = [] #Feature list for the current image
         for line in file:
-            if (line_num == DIMENSIONS): #reset every Dimension lines for the next image
-                feature = []
-                
+            if (len(feature) == FEATURES): #reset every Dimension lines for the next image
                 list.append(feature) 
-                #feature = []
-                line_num = 0
+                feature = []
 
             for c in line: #Covert white-space to 0s and +/# to 1s
                 if (c == ' '):
                     feature.append(0)
                 elif (c == '+' or c == '#'):
                     feature.append(1)
-            line_num += 1 
 
     list.append(feature) #append final list
 
@@ -55,9 +50,6 @@ def train_bayes(feature_list, label_list):
     for l in label_list:
         num_digits[l] += 1
 
-    print(num_digits)
-    #print(len(label_list))
-
     prob_digits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     i = 0
     while i < len(prob_digits):
@@ -69,7 +61,6 @@ def train_bayes(feature_list, label_list):
         i += 1
 
     i = 0
-    #print(prob_digits)
 
     zero_feature_table_blanks = [0]*len(feature_list[0])
     zero_feature_table_pixels = [0]*len(feature_list[0])
@@ -102,126 +93,84 @@ def train_bayes(feature_list, label_list):
     nine_feature_table_pixels = [0]*len(feature_list[0])
 
     i = 0
-    #j = 0
-    #print("yo")
     while i < len(feature_list):
         if(label_list[i] == 0):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(zero_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     zero_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     zero_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 1):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(one_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     one_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     one_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 2):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(two_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     two_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     two_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 3):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(three_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     three_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     three_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 4):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(four_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     four_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     four_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 5):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(five_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     five_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     five_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 6):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(six_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     six_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     six_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 7):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(seven_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     seven_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     seven_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 8):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(eight_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     eight_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     eight_feature_table_pixels[j] += 1
                 j = j + 1
         elif(label_list[i] == 9):
-            #print("face")
-            # do stuff with face_feature_table
             j = 0
             while j < len(nine_feature_table_blanks):
-                #print(feature_list[i][j])
                 if (feature_list[i][j] == 0):
                     nine_feature_table_blanks[j] += 1
-                #j += 1
                 else:
                     nine_feature_table_pixels[j] += 1
                 j = j + 1
@@ -236,11 +185,6 @@ def train_bayes(feature_list, label_list):
     while i < len(zero_feature_table_pixels):
         zero_feature_table_pixels[i] = zero_feature_table_pixels[i] / num_digits[0]
         i += 1
-
-    # i=0
-    # while i < len(zero_feature_table_blanks):
-    #     print(zero_feature_table_blanks[i] + zero_feature_table_pixels[i])
-    #     i += 1
 
     i = 0
     while i < len(one_feature_table_blanks):
@@ -528,14 +472,6 @@ def train_bayes(feature_list, label_list):
                     nine_predictions[i] += 0.01
             j += 1
         i += 1 
-    # print(face_predictions)
-    # counter = 0
-    # i = 0
-    # while i < len(face_predictions):
-    #     if (not_face_predictions[i] != 0):
-    #         counter += 1
-    #     i += 1
-    # print(counter)
 
     i = 0
     while i < len(zero_predictions):
@@ -614,10 +550,6 @@ def train_bayes(feature_list, label_list):
             final_predictions[i] = 9
         i += 1
 
-    print(final_predictions)
-
-    print(np.mean(final_predictions))
-    print(np.mean(test_label_list))
 
     num_correct = 0
     i = 0
@@ -626,7 +558,7 @@ def train_bayes(feature_list, label_list):
             num_correct += 1
         i += 1
 
-    print(num_correct/len(final_predictions))
+    print("Naive Bayes for digits accuracy: ", num_correct/len(final_predictions))
 
 
 

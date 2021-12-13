@@ -1,5 +1,7 @@
 from os import linesep
 import numpy as np
+import time
+from matplotlib import pyplot as plt 
 
 # Feature Idea: Use 4489 (67*67) features for naive bayes face algorithm
 
@@ -35,6 +37,7 @@ def create_feature_list(file):
     list.append(feature) #append final list
 
     feature_list = np.array(list) #Covert list to numpy array
+    #print(len(feature_list))
     return feature_list
 
 #Creates a list of labels for each image
@@ -43,7 +46,21 @@ def create_label_list(file):
     return np.loadtxt(file, dtype=int)
 
 
-def train_bayes(feature_list, label_list):
+def train_bayes(train_percentage):
+
+    start_time = time.time()
+    
+    feature_list = create_feature_list(FACE_TRAIN_IMAGE_PATH)
+    label_list = create_label_list(FACE_TRAIN_LABEL_PATH)
+
+    if (train_percentage != 100):
+        #randomly select training sample of percentage
+        total_images = len(feature_list)
+        sample_size = int((train_percentage/100) * total_images)
+        idx = np.random.choice(total_images, size=sample_size, replace=False)
+
+        feature_list = feature_list[idx]
+        label_list = label_list[idx]
 
     #Calculate P(y=face) as prob_face and P(y=-face) as prob_not_face
     num_faces = 0
@@ -103,6 +120,8 @@ def train_bayes(feature_list, label_list):
     while i < len(not_face_feature_table_pixels):
         not_face_feature_table_pixels[i] /= (len(label_list) - num_faces)
         i += 1
+
+    end_time = time.time()
 
     #Feature list for testing data
     test_list = create_feature_list(FACE_TEST_IMAGE_PATH)
@@ -176,9 +195,62 @@ def train_bayes(feature_list, label_list):
             num_correct += 1
         i += 1
 
+    total_time = end_time - start_time
+
     print("Naive Bayes for faces accuracy: ", num_correct/len(final_predictions))
+    return num_correct/len(final_predictions), total_time
 
+def get_stats():
+    # list of averages/std/time for each percentage of data points, 
+    #i.e: mean_list[i] is the mean for 10% of the training set
+    mean_list = [] 
+    std_list = []
+    time_list = []
+    for train_percentage in range(10, 110, 10):
+        acc = []
+        total_time = []
+        for i in range(5):
+            accuracy, time_spent = train_bayes(train_percentage)
+            total_time.append(time_spent)
+            acc.append(accuracy)
 
+        mean_list.append(np.mean(acc))
+        std_list.append(np.std(acc))
+        time_list.append(np.mean(total_time))
+    return mean_list, std_list, time_list
 
+def graph(mean_list, std_list, time_list, display):
+    train_percentage = [.10,.20,.30,.40,.50,.60,.70,.80,.90,1]
+    
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    
+    # Mean Accuracy vs Data points
+    if display == 1:
+        ax.plot(train_percentage, mean_list, color="blue")
+        plt.title("FACE: Accuracy vs Data Points")
+        plt.xlabel("Data Points (%)")
+        plt.ylabel("Average Accuracy (%)")
+        ax.set_yticklabels(['{:.0%}'.format(x) for x in ax.get_yticks()])
+    #Standard Deviation vs Data Points
+    if display == 2:
+        ax.plot(train_percentage, std_list, color="green")
+        plt.title("FACE: Standard Deviation vs Data Points")
+        plt.xlabel("Data Points (%)")
+        plt.ylabel("Average Standard Deviation (%)")
+        ax.set_yticklabels(['{:.0%}'.format(x) for x in ax.get_yticks()])
+    #Time vs Data points
+    if display == 3:
+        ax.plot(train_percentage, time_list, color="red")
+        plt.title("FACE: Time to Train vs Data Points")
+        plt.xlabel("Data Points (%)")
+        plt.ylabel("Time Needed to Train (s)")
+    
+    
+    ax.set_xticklabels(['{:.0%}'.format(x) for x in ax.get_xticks()])
+    ax.plot()
+    plt.show()
 
-train_bayes(create_feature_list(FACE_TRAIN_IMAGE_PATH), create_label_list(FACE_TRAIN_LABEL_PATH))
+#driver(100)
+mean_list, std_list, time_list = get_stats()
+graph(mean_list, std_list, time_list, 1)
